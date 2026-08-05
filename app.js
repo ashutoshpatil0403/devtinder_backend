@@ -1,12 +1,12 @@
 const express = require("express");
 const app = express();
-const ConnectDB = require("./config/database");
+const ConnectDB = require("./src/config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const authRouter = require("./routes/AuthRouter");
-const profileRouter = require("./routes/ProfileRouter");
-const requestRouter = require("./routes/RequestRouter");
-const userRouter = require("./routes/UserRouter");
+const authRouter = require("./src/routes/AuthRouter");
+const profileRouter = require("./src/routes/ProfileRouter");
+const requestRouter = require("./src/routes/RequestRouter");
+const userRouter = require("./src/routes/UserRouter");
 const dotenv = require("dotenv");
 dotenv.config();
 
