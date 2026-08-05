@@ -12,8 +12,9 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start": "node src/app.js",
-    "dev": "nodemon src/app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "vercel-start": "node app.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
