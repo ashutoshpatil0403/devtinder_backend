@@ -47,14 +47,12 @@ authRouter.post("/login", async (req, res) => {
       const token = await user.getJWT();
 
       // add token to cookie and send the responce back to user
-      res.cookie(
-        "token",
-        token,
-        // {
-        // httpOnly: true,
-        // sameSite: "lax",
-        // }
-      );
+      res.cookie("token", token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        path: "/",
+      });
       res
         .status(200)
         .json({ success: true, message: "Login successful", data: user });
@@ -68,13 +66,12 @@ authRouter.post("/login", async (req, res) => {
 
 authRouter.post("/logout", async (req, res) => {
   try {
-    res.clearCookie(
-      "token",
-      //    {
-      //   httpOnly: true,
-      //   sameSite: "lax",
-      // }
-    );
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      path: "/",
+    });
     res.status(200).json({ success: true, message: "Logout successful" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -130,7 +127,7 @@ authRouter.post("/reset-password", async (req, res) => {
     }
 
     // Verify the reset token
-    const decoded = jwt.verify(resetToken, "JWT_SECRET_KEY");
+    const decoded = jwt.verify(resetToken, process.env.JWT_SECRET);
     if (decoded.purpose !== "password-reset") {
       return res.status(401).json({ success: false, message: "Invalid token" });
     }
