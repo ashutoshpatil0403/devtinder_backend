@@ -5,9 +5,9 @@ const contactUsRouter = express.Router();
 
 contactUsRouter.post("/contact-us", async (req, res) => {
   try {
-    const { emailId, mobileNo, message } = req.body;
+    const { emailId, mobileNo, message,fullName } = req.body;
 
-    if (!emailId || !mobileNo || !message) {
+    if (!emailId || !mobileNo || !message || !fullName) {
       return res
         .status(400)
         .json({ success: false, message: "All Fields are Required" });
@@ -39,6 +39,7 @@ contactUsRouter.post("/contact-us", async (req, res) => {
       emailId: emailId,
       mobileNo: mobileNo,
       message: message,
+      fullName: fullName,
     });
 
     res.status(200).json({

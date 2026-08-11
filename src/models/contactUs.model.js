@@ -3,6 +3,11 @@ const validator = require("validator");
 
 const contactUsSchema = new mongoose.Schema(
   {
+    fullName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     emailId: {
       type: String,
       required: true,
