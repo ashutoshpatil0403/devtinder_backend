@@ -8,6 +8,7 @@ const profileRouter = require("./src/routes/ProfileRouter");
 const requestRouter = require("./src/routes/RequestRouter");
 const userRouter = require("./src/routes/UserRouter");
 const dotenv = require("dotenv");
+const contactUsRouter = require("./src/routes/ContactUsRouter");
 dotenv.config();
 
 app.use(express.json());
@@ -23,6 +24,7 @@ app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
+app.use("/", contactUsRouter);
 
 // app.get("/feed", async (req, res) => {
 //   try {
