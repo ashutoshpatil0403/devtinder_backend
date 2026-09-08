@@ -11,14 +11,50 @@ const dotenv = require("dotenv");
 const contactUsRouter = require("./src/routes/ContactUsRouter");
 dotenv.config();
 
+let dbConnectionPromise;
+
+const connectDatabase = () => {
+  if (!dbConnectionPromise) {
+    dbConnectionPromise = ConnectDB();
+  }
+  return dbConnectionPromise;
+};
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: (origin, callback) => {
+      const allowedOrigins = (process.env.FRONTEND_URL || "")
+        .split(",")
+        .map((value) => value.trim().replace(/\/$/, ""))
+        .filter(Boolean);
+
+      if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Origin is not allowed by CORS"));
+    },
     credentials: true,
   }),
 );
+
+app.use(async (req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return next();
+  }
+
+  try {
+    await connectDatabase();
+    return next();
+  } catch (error) {
+    return res.status(503).json({
+      success: false,
+      message: "Database unavailable",
+    });
+  }
+});
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
@@ -106,7 +142,7 @@ app.use("/", contactUsRouter);
 //   }
 // });
 
-ConnectDB()
+connectDatabase()
   .then(() => {
     console.log("Database connected successfully...!");
     if (require.main === module) {
