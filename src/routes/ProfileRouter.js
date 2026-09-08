@@ -19,8 +19,15 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     ValidateProfileEditData(req);
     const user = req.user;
     const updatedData = req.body;
-    const updatedUser = await User.findByIdAndUpdate(user._id, updatedData);
-    res.status(200).json({ success: true, message: "Profile updated successfully", data: updatedUser });
+    const updatedUser = await User.findByIdAndUpdate(user._id, updatedData, {
+      new: true,
+      runValidators: true,
+    }).select("-password");
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: updatedUser,
+    });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
   }
