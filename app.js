@@ -20,6 +20,10 @@ app.use(
   }),
 );
 
+app.get("/", (req, res) => {
+  res.status(200).json({ success: true, message: "API is running" });
+});
+
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
@@ -109,10 +113,14 @@ app.use("/", contactUsRouter);
 ConnectDB()
   .then(() => {
     console.log("Database connected successfully...!");
-    app.listen(process.env.PORT, () => {
-      console.log(`Server is running on port ${process.env.PORT}`);
-    });
+    if (require.main === module) {
+      app.listen(process.env.PORT || 3000, () => {
+        console.log(`Server is running on port ${process.env.PORT || 3000}`);
+      });
+    }
   })
   .catch((err) => {
     console.log(err.message);
   });
+
+module.exports = app;
