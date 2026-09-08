@@ -20,17 +20,19 @@ const connectDatabase = () => {
   return dbConnectionPromise;
 };
 
+const normalizeOrigin = (origin) => origin.trim().replace(/\/$/, "");
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigins = (process.env.FRONTEND_URL || "")
+      const allowedOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || "")
         .split(",")
-        .map((value) => value.trim().replace(/\/$/, ""))
+        .map(normalizeOrigin)
         .filter(Boolean);
 
-      if (!origin || allowedOrigins.includes(origin.replace(/\/$/, ""))) {
+      if (!origin || allowedOrigins.includes(normalizeOrigin(origin))) {
         return callback(null, true);
       }
 
