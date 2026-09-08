@@ -11,59 +11,14 @@ const dotenv = require("dotenv");
 const contactUsRouter = require("./src/routes/ContactUsRouter");
 dotenv.config();
 
-let dbConnectionPromise;
-
-const connectDatabase = () => {
-  if (!dbConnectionPromise) {
-    dbConnectionPromise = ConnectDB();
-  }
-  return dbConnectionPromise;
-};
-
-const normalizeOrigin = (origin) => origin.trim().replace(/\/$/, "");
-
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: (origin, callback) => {
-      const allowedOrigins = (process.env.FRONTEND_URLS || process.env.FRONTEND_URL || "")
-        .split(",")
-        .map(normalizeOrigin)
-        .filter(Boolean);
-
-      if (!origin || allowedOrigins.includes(normalizeOrigin(origin))) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("Origin is not allowed by CORS"));
-    },
+    origin: process.env.FRONTEND_URL,
     credentials: true,
-    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    optionsSuccessStatus: 204,
   }),
 );
-
-app.get("/", (req, res) => {
-  res.status(200).json({ success: true, message: "API is running" });
-});
-
-app.use(async (req, res, next) => {
-  if (req.method === "OPTIONS") {
-    return next();
-  }
-
-  try {
-    await connectDatabase();
-    return next();
-  } catch (error) {
-    return res.status(503).json({
-      success: false,
-      message: "Database unavailable",
-    });
-  }
-});
 
 app.use("/", authRouter);
 app.use("/", profileRouter);
@@ -151,17 +106,13 @@ app.use("/", contactUsRouter);
 //   }
 // });
 
-connectDatabase()
+ConnectDB()
   .then(() => {
     console.log("Database connected successfully...!");
-    if (require.main === module) {
-      app.listen(process.env.PORT || 3000, () => {
-        console.log(`Server is running on port ${process.env.PORT || 3000}`);
-      });
-    }
+    app.listen(process.env.PORT, () => {
+      console.log(`Server is running on port ${process.env.PORT}`);
+    });
   })
   .catch((err) => {
     console.log(err.message);
   });
-
-module.exports = app;
