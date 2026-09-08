@@ -37,8 +37,15 @@ app.use(
       return callback(new Error("Origin is not allowed by CORS"));
     },
     credentials: true,
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    optionsSuccessStatus: 204,
   }),
 );
+
+app.get("/", (req, res) => {
+  res.status(200).json({ success: true, message: "API is running" });
+});
 
 app.use(async (req, res, next) => {
   if (req.method === "OPTIONS") {
